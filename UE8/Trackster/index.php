@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,73 +15,114 @@ $host = 'localhost';
 $dbname = 'medt3';
 $user = 'htluser';
 $pwd = 'htluser';
-try{
-  $db = new PDO("mysql:host=$host;dbname=$dbname", $user, $pwd);
-}
-catch (PDOException $e)
+
+//Erstellen einer Datenbank
+try 
 {
-  echo 'Connection failed: '.$e->getMessage();
+  $database = new PDO("mysql:host=$host;dbname=$dbname", $user, $pwd);
 }
-
+catch(PDOException $error)
+{
+  echo 'Connection failed: '. $e-> getMessage();
+}
 ?>
-<div class="container">
-<?php 
 
-  //Löschen
+<div class="container">
+
+
+<?php
+   //Löschen
   if(isset($_GET['delete'])) // Trigger für löschen von Eintrag
   {    
-    $delete = $db->prepare("Delete FROM projects where Pid=".$_GET['delete'].";");
-    $delete -> execute();
+    echo "<h1>Löschen</h1>";
 
+    $delete = $database->prepare("Delete FROM projects where Pid=:Pid;");
+    $delete ->bindParam(':Pid', $_GET['delete'] );
+    $delete -> execute();
+    
     $count = $delete -> rowCount();
-    print($count);
 
     if( $count > 0) // Löschen erfolgreich --> PDO:: ROW COUNT
-    echo "<p class=\"bg-success\">Erfolg beim Löschen von Zeile: ".$_GET['delete']."</p>";
+    {
+      ?>
+      <p class="bg-success"> Erfolg beim Löschen</p>
+      <?php
+    }
     else  // Fehlgeschlagen
-    echo "<p class=\"bg-danger\">Fehler beim Löschen von Zeile: ".$_GET['delete']."</p>";
+    {
+      ?>
+      <p class="bg-danger"> Fehler beim Löschen</p>
+      <?php
+    }
   }
 
   //Formular für Updaten
-  if(isset($_GET['change'])&& !isset($_POST['submit'])) // Trigger für bearbeiten des Eintrages
-  {
-    echo "<h1>Änderungen</h1>";
+   if(isset($_GET['change'])&& !isset($_POST['submit']))
+   {
+   	echo "<h1>Änderungen</h1>";
 
-    $change = $db -> query("SELECT pname, pdescription, created, Pid FROM projects where Pid = ".$_GET['change'].";");
-    $toChange = $change -> fetch(PDO::FETCH_ASSOC);
-    
-    echo "<form method=\"POST\">";
-    echo "<input type=\"text\" name=\"pname\" value=\"".$toChange['pname']."\">";
-    echo "<input type=\"text\" name=\"pdesc\" value=\"".$toChange['pdescription']."\">";
-    echo "<input type=\"date\" name=\"pdate\" value=\"".$toChange['created']."\">";
-    echo "<input type=\"hidden\" name=\"update\" value=\"".$toChange['Pid']."\">";
-    echo "<input type=\"submit\" name=\"submit\">";
-    echo "</form>";
-  }
+   	$sql = "SELECT * FROM projects where Pid = :Pid";
+    $toChange = $database -> prepare($sql);
+    $toChange -> bindParam(':Pid',$Pid);
+    $Pid = $_GET['change'];
+    $toChange -> execute();
+    $visualize = $toChange -> fetch();
+    ?>
 
-  //Updaten
-  if(isset($_POST['submit']))
-  {
-    $sql = "UPDATE projects SET pname = '".$_POST['pname']."',pdescription ='".$_POST['pdesc']."', created='".$_POST['pdate']."' WHERE Pid =".$_POST['update'].";";
-    $update = $db->prepare($sql);
+    <form class="form-inline" method ="POST">
+    <div class="form-group">
+    	<input type="text" class="form-control" name ="pname" value= "<?php echo $visualize['pname'] ?>">
+    </div>
+    <div class="form-group">
+    	<input type="text" class="form-control" name ="pdesc" value="<?php echo $visualize['pdescription'] ?>">
+    </div>
+    <div class="form-group">
+    	<input type="date" class="form-control" name ="created" value= "<?php echo $visualize['created'] ?>"">
+    </div>
+    	<input type="hidden" name ="update" value="<?php echo $visualize['Pid'] ?>"">
 
-    $update->execute();
-    $check = $update -> rowCount();
+    	<input type="submit" class="btn btn-default" name = "submit">
+    </form>
+  <?php
+   } 
 
-    print($check);  
-    if( $check > 0) // Update erfolgreich --> PDO:: ROW COUNT
-    echo "<p class=\"bg-success\">Update Zeile: ".$_POST['update']."</p>";
-    else  // Fehlgeschlagen
-    echo "<p class=\"bg-danger\">Fehler bei Zeile: ".$_POST['update']."</p>";
-  }
+   //Updaten
+   if(isset($_POST['submit']))
+   {
+	   	echo "<h1>Änderungen</h1>";
 
+	   	$sql = "UPDATE projects SET pname = :pname,pdescription =:pdescription, created=:created WHERE Pid =:Pid";
+	   	$update = $database -> prepare($sql);
+
+	   	$update -> bindParam(':pname',$_POST['pname'],PDO::PARAM_STR);
+	    $update -> bindParam(':pdescription',$_POST['pdesc'],PDO::PARAM_STR);
+	    $update -> bindParam(':created',$_POST['created'],PDO::PARAM_STR);
+	    $update -> bindParam(':Pid',$_POST['update'],PDO::PARAM_INT);
+
+	    $update -> execute();
+
+	    if($update -> rowCount() >0)
+	    {
+	    ?> 
+	    	<p class="bg-success"> Update Zeile</p>
+	    <?php
+		}
+	    else
+	    {
+	    ?>
+	    	<p class="bg-danger"> Fehler beim Updaten</p>
+	    <?php
+	    }
+   }
+   
 
   //Select für Tabelle
-  $res = $db->query("SELECT pname,pdescription,created,Pid FROM projects");
-  $tmp = $res ->fetchAll(PDO::FETCH_ASSOC); // staticZufriff in PHP mit :: 
+  $sql = "SELECT * FROM projects";
+  $resolution = $database ->query($sql);
+  $visualize = $resolution -> fetchAll();
 ?>
 
-  <table class="table">
+  <table class="table table-striped">
     <thead>
     <tr>
       <th>Name</th>
@@ -92,26 +133,21 @@ catch (PDOException $e)
     </thead>
     <tbody>
     <?php
-    foreach ($tmp as $item) 
-    {    
-      echo 
-      "<tr>
-      <td>$item[pname]</td>
-      <td>$item[pdescription]</td>
-      <td>$item[created]</td>
-      
-      <td>
-        <a href=\"index.php?delete=$item[Pid]\"><span class=\"glyphicon glyphicon-trash\"></span></a>
-        <a href=\"index.php?change=$item[Pid]\"><span class=\"glyphicon glyphicon-cog\"></span></a>
-      </td>
-      </tr>
-      ";
-    }  
-    ?>
-    </tbody>
-  </table>
+    foreach ($visualize as $item) 
+    {
+      ?>
+      <tr>
+        <td><?php echo $item['pname']?></td>
+        <td><?php echo $item['pdescription']?></td>
+        <td><?php echo $item['created']?></td>
+        <td>
+          <a href="index.php?delete=<?php echo $item['Pid'] ?>"<span class="glyphicon glyphicon-trash"></span></a>
+          <a href="index.php?change=<?php echo $item['Pid'] ?>"<span class="glyphicon glyphicon-cog"></span></a>
+        </td>
+       </tr> 
+   <?php    
+    }
+   ?>
 </div>
-
-
   </body>
 </html>

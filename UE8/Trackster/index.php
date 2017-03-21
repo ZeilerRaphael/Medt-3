@@ -28,13 +28,64 @@ catch(PDOException $error)
 ?>
 
 <div class="container">
-
-
+<h1>Projektübersicht</h1>
 <?php
-   //Löschen
+  
+  // Button INSERT
+  if(!isset($_GET['insert']))
+  {
+    
+    ?>
+      <a class="btn btn-default" href= "index.php?insert=true">Neues Projekt</a>
+    <?php
+  }
+  // Formular für INSERT
+  else
+  {
+    echo "<h2>Neues Projekt</h2>";
+
+    ?>
+    <form class="form-inline" method ="POST">
+    <div class="form-group">
+      <input type="text" class="form-control" name ="newname">
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name ="newdesc">
+    </div>
+    <div class="form-group">
+      <input type="date" class="form-control" name ="newdate"">
+    </div>
+      <input type="submit" class="btn btn-default" name = "newsubmit">
+    </form>
+    <?php
+  }
+
+  // INSERT Statement
+  if (isset($_POST['newsubmit']))
+  {   
+    $sql = "INSERT INTO projects (pname, pdescription, created) VALUES (:newname,:newdesc,:newdate)";    
+    $stmt = $database -> prepare($sql);
+
+    $stmt->bindParam(':newname', $newname);
+    $stmt->bindParam(':newdesc', $newdesc);
+    $stmt->bindParam(':newdate', $newdate);
+
+    $newname = $_POST['newname'];
+    $newdesc = $_POST['newdesc'];
+    $newdate = $_POST['newdate'];
+
+    $stmt -> execute();
+
+    //QUick and Dirty
+    ?>
+    <!-- <script type="text/javascript"> window.location = "http://localhost/medt/ue8/Trackster"; </script> -->
+    <?php
+  }
+
+  // Löschen
   if(isset($_GET['delete'])) // Trigger für löschen von Eintrag
   {    
-    echo "<h1>Löschen</h1>";
+    echo "<h2>Löschen</h2>";
 
     $delete = $database->prepare("Delete FROM projects where Pid=:Pid;");
     $delete ->bindParam(':Pid', $_GET['delete'] );
@@ -56,10 +107,10 @@ catch(PDOException $error)
     }
   }
 
-  //Formular für Updaten
+  //Formular für UPDATE
    if(isset($_GET['change'])&& !isset($_POST['submit']))
    {
-   	echo "<h1>Änderungen</h1>";
+   	echo "<h2>Änderungen</h2>";
 
    	$sql = "SELECT * FROM projects where Pid = :Pid";
     $toChange = $database -> prepare($sql);
@@ -80,13 +131,13 @@ catch(PDOException $error)
     	<input type="date" class="form-control" name ="created" value= "<?php echo $visualize['created'] ?>"">
     </div>
     	<input type="hidden" name ="update" value="<?php echo $visualize['Pid'] ?>"">
-
+        
     	<input type="submit" class="btn btn-default" name = "submit">
     </form>
   <?php
    } 
 
-   //Updaten
+   //UPDATE
    if(isset($_POST['submit']))
    {
 	   	echo "<h1>Änderungen</h1>";
@@ -116,7 +167,7 @@ catch(PDOException $error)
    }
    
 
-  //Select für Tabelle
+  //Tabelle für SELECT
   $sql = "SELECT * FROM projects";
   $resolution = $database ->query($sql);
   $visualize = $resolution -> fetchAll();

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Vorlage</title>
+    <!--Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Jquery -->
+    <script
+  		src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous">			
+  	</script> 	
+  
+
+   <script> 
+    $(document).ready(function() {
+    $(".adjust").click(Append);
+    $('.remove').click(Remove);
+  }
+    );
+
+    function Append(){
+      $("#list").append("<li> new line </li>");
+    }
+    function Remove(){
+      $("#list li:last-child").remove();
+    }
+    </script>
+
+    </head>
+
+  <body>
+  <button type="button" class="btn btn-default adjust">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    </button>
+
+    <button type="button" class="btn btn-default remove">
+    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+    </button>
+
+    <ul id="list">
+    </ul>
+  </body>
+</html>

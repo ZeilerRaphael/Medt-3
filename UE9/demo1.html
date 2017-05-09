@@ -1,0 +1,37 @@
+<head>
+	<title> get ElementBYID example</title>
+	<script>
+		
+	</script>		
+</head>
+
+<body>
+	<h1> Java Script Einführung </h1>
+	
+	<h2> Inline JS</h2>
+
+	<p id="para1" onclick = "sayHello()">Old Message</p>
+	<script> 
+		var myP_ElementObj = document.getElementById("para1");
+		myP_ElementObj.innerHTML = "New Message (Clickbait)";
+
+		function sayHello()
+		{
+			alert("Hello");
+		}
+	</script>
+	
+	<h2> EventBinding </h2>
+	
+	<p id="para2" style="cursor:pointer";> Static Message</p>
+	<script> 
+		document.getElementById("para2").onclick = changeText;
+
+		function changeText()
+		{		
+			document.getElementById("para2").innerHTML= "Loaded Message 2";
+		}
+		
+	</script>
+	
+</body>

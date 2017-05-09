@@ -1,0 +1,19 @@
+<head>
+	<title>getElementByID example</title>
+	<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+  	<script>
+  	$(document).ready(function()
+  		{
+  			$('#para1').click(changeText);
+  		})
+  	function changeText(){
+  		$('#para1').html("Some new Text here");
+  	}
+	</script>
+</head>
+  <body>
+  	<p id="para1" style="cursor:pointer;"> Some text here</p>
+  </body>

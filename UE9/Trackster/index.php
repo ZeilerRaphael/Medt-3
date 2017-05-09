@@ -97,7 +97,7 @@ catch(PDOException $error)
     );
 
     function Delete() {
-        var currentPID = $(this).parent().parent().attr('id');
+        var currentPID = $(this).closest("tr").attr('id');
         if (confirm("Wollen sie es wirklich Löschen?")) {
             console.log("yes " + currentPID);
             //Ajax-Call konfigurieren
@@ -112,11 +112,11 @@ catch(PDOException $error)
                         //Zeile (mit der Projekt ID) aus der HTML-Tabelle entfernen ( .remove())
                         //MsgBox (CSS nicht vergessen
                         $("#"+currentPID).remove();
-                        $("#msgBox").addClass("bg-success").text("Passt scho!"+currentPID).show(500).delay(1000).hide(500);
+                        $("#msgBox").addClass("bg-success").text("Passt scho!").show(500).delay(1000).hide(500);
 
                     }
                     else {
-                        $("#msgBox").addClass("bg-danger").text("Passt so Nd !"+currentPID).show(500).delay(1000).hide(500);
+                        $("#msgBox").addClass("bg-danger").text("Passt so Nd!").show(500).delay(1000).hide(500);
                     }
 
                 },

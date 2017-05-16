@@ -1,3 +1,4 @@
+<?php require "/API/db.php";?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -14,47 +15,14 @@
         src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous">      
     </script>
   <body>
-
-<?php 
-$host = 'localhost';
-$dbname = 'medt3';
-$user = 'htluser';
-$pwd = 'htluser';
-
-//Erstellen einer Datenbank
-try 
-{
-  $database = new PDO("mysql:host=$host;dbname=$dbname", $user, $pwd);
-}
-catch(PDOException $error)
-{
-  echo 'Connection failed: '. $e-> getMessage();
-}
-?>
-
 <div class="container">
 <h1>Projektübersicht</h1>
 
     <p id="msgBox" class="box" style="height:50px; font-size:200%;"></p>
-<?php
-
-    if(isset($_POST['projectToDelete']))
-    {
-        $delete = $database->prepare("Delete FROM projects where Pid=:Pid;");
-        $delete ->bindParam(':Pid', $value );
-        $value = $_POST['projectToDelete'];
-        $delete -> execute();
-
-        $count = $delete -> rowCount();
-
-    }
-    else {
+<?php   
         $sql = "SELECT * FROM projects";
         $resolution = $database->query($sql);
         $visualize = $resolution->fetchAll();
-    }
-  //Tabelle für SELECT
-
 ?>
 
 
@@ -72,7 +40,7 @@ catch(PDOException $error)
     foreach ($visualize as $item) 
     {
       ?>
-      <tr  id="<?php echo $item['Pid']?>">
+      <tr id="<?php echo $item['Pid']?>">
         <td><?php echo $item['pname']?></td>
         <td><?php echo $item['pdescription']?></td>
         <td><?php echo $item['created']?></td>
@@ -88,6 +56,8 @@ catch(PDOException $error)
    ?>
 </div>
 
+
+
 <script>
     $(document).ready(function() {
             $("#msgBox").hide();
@@ -102,12 +72,14 @@ catch(PDOException $error)
             console.log("yes " + currentPID);
             //Ajax-Call konfigurieren
             var myAjaxConfigObj = {
-                url: "http://localhost/medt/ue9/Trackster/", // current Page
+                url: "http://localhost/medt/ue9/Trackster/API/delete.php", // current Page
                 type: "post",
                 data: "projectToDelete=" + currentPID,
                 success: function (dataFromServer) {
+
+
                     console.log("Server response: " + dataFromServer);
-                    if (dataFromServer) {
+                    if (dataFromServer == 1) {
                         //Löschen erfolgreich:
                         //Zeile (mit der Projekt ID) aus der HTML-Tabelle entfernen ( .remove())
                         //MsgBox (CSS nicht vergessen
@@ -135,5 +107,6 @@ catch(PDOException $error)
         console.log("Bearbeiten");
     }
 </script>
+
   </body>
 </html>

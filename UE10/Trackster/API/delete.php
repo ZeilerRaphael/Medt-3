@@ -1,6 +1,6 @@
 
 <?php
-require "db.php";
+require "../DB/db.php";
 if(isset($_POST['projectToDelete']))
     {
         $delete = $database->prepare("Delete FROM projects where Pid=:Pid;");
@@ -18,6 +18,5 @@ if(isset($_POST['projectToDelete']))
             $response = array('delete' => 'error');
         }
         echo json_encode($response);
-        exit();
     } 
 ?>
